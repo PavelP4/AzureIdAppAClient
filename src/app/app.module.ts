@@ -19,6 +19,10 @@ import { MsalGuard, MsalInterceptor, MsalBroadcastService, MsalInterceptorConfig
 
 const isIE = window.navigator.userAgent.indexOf('MSIE ') > -1 || window.navigator.userAgent.indexOf('Trident/') > -1;
 
+export function loggerCallback(logLevel: LogLevel, message: string) {
+  console.log(message);
+}
+
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
     auth: {
@@ -27,13 +31,18 @@ export function MSALInstanceFactory(): IPublicClientApplication {
       // Full directory URL, in the form of https://login.microsoftonline.com/<tenant>
       authority: "https://login.microsoftonline.com/90e11593-043a-4569-abc9-7d748817700d/",
       // Must be the same redirectUri as what was provided in your app registration.
-      redirectUri: "http://localhost:4200",
-      knownAuthorities: ["https://login.microsoftonline.com/90e11593-043a-4569-abc9-7d748817700d/"],
-      navigateToLoginRequestUrl: true
+      redirectUri: "http://localhost:4200/"
     },
     cache: {
       cacheLocation: BrowserCacheLocation.LocalStorage,
       storeAuthStateInCookie: isIE
+    },
+    system: {
+      loggerOptions: {
+        loggerCallback,
+        logLevel: LogLevel.Info,
+        piiLoggingEnabled: false
+      }
     }
   });
 }
